@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量化分析系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .price-up {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .price-down {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .alert {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-5">量化分析系统</h1>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="h5 mb-0">加密货币市场</h2>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="h6 mb-3">涨幅榜前十</h3>
+                        <div id="crypto-top10-container" class="table-responsive mb-4">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>排名</th>
+                                        <th>币种</th>
+                                        <th>价格 (USD)</th>
+                                        <th>涨跌幅</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crypto-top10-table-body">
+                                    <tr>
+                                        <td colspan="4" class="text-center">加载中...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h3 class="h6 mb-3">一分钟涨跌幅超过5%</h3>
+                        <div id="crypto-minute-change-container" class="table-responsive mb-4">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>排名</th>
+                                        <th>币种</th>
+                                        <th>价格 (USD)</th>
+                                        <th>一分钟涨跌幅</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crypto-minute-change-table-body">
+                                    <tr>
+                                        <td colspan="4" class="text-center">加载中...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h3 class="h6 mb-3">一分钟涨跌幅超过3%</h3>
+                        <div id="crypto-minute-change-3p-container" class="table-responsive mb-4">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>排名</th>
+                                        <th>币种</th>
+                                        <th>价格 (USD)</th>
+                                        <th>一分钟涨跌幅</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crypto-minute-change-3p-table-body">
+                                    <tr>
+                                        <td colspan="4" class="text-center">加载中...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h3 class="h6 mb-3">配置监测</h3>
+                        <div id="crypto-container" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>币种</th>
+                                        <th>价格 (USD)</th>
+                                        <th>涨跌幅</th>
+                                        <th>更新时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crypto-table-body">
+                                    <tr>
+                                        <td colspan="4" class="text-center">加载中...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h2 class="h5 mb-0">A股市场</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="stock-container" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>股票</th>
+                                        <th>名称</th>
+                                        <th>价格 (CNY)</th>
+                                        <th>涨跌幅</th>
+                                        <th>更新时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stock-table-body">
+                                    <tr>
+                                        <td colspan="5" class="text-center">加载中...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h2 class="h5 mb-0">市场趋势</h2>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="market-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4 text-center">
+            <p class="text-muted">数据更新间隔: <span id="refresh-interval">10</span> 秒</p>
+            <p class="text-muted">最后更新: <span id="last-update">加载中...</span></p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let cryptoData = {};
+        let cryptoTop10 = {};
+        let cryptoMinuteChange = {};
+        let cryptoMinuteChange3p = {};
+        let stockData = {};
+        let config = {};
+        let chart = null;
+        
+        // 获取数据
+        function fetchData() {
+            fetch('/api/data')
+                .then(response => response.json())
+                .then(data => {
+                    cryptoData = data.crypto;
+                    cryptoTop10 = data.crypto_top10;
+                    cryptoMinuteChange = data.crypto_minute_change;
+                    cryptoMinuteChange3p = data.crypto_minute_change_3p;
+                    stockData = data.stock;
+                    config = data.config;
+                    updateUI();
+                    updateChart();
+                    document.getElementById('refresh-interval').textContent = config.refresh_interval;
+                    document.getElementById('last-update').textContent = new Date().toLocaleString();
+                })
+                .catch(error => {
+                    console.error('获取数据失败:', error);
+                });
+        }
+        
+        // 更新UI
+        function updateUI() {
+            updateCryptoTop10Table();
+            updateCryptoMinuteChangeTable();
+            updateCryptoMinuteChange3pTable();
+            updateCryptoTable();
+            updateStockTable();
+        }
+        
+        // 更新一分钟涨跌幅监测
+        function updateCryptoMinuteChangeTable() {
+            const tbody = document.getElementById('crypto-minute-change-table-body');
+            tbody.innerHTML = '';
+            
+            if (Object.keys(cryptoMinuteChange).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center">暂无数据</td></tr>';
+                return;
+            }
+            
+            // 按排名排序
+            const sortedMinuteChange = Object.entries(cryptoMinuteChange).sort((a, b) => a[1].rank - b[1].rank);
+            
+            sortedMinuteChange.forEach(([symbol, data]) => {
+                const row = document.createElement('tr');
+                const price = data.price.toFixed(2);
+                const changeClass = data.minute_change >= 0 ? 'price-up' : 'price-down';
+                const change = data.minute_change.toFixed(2);
+                
+                row.innerHTML = `
+                    <td>${data.rank}</td>
+                    <td>${symbol}</td>
+                    <td>${price}</td>
+                    <td class="${changeClass}">${change}%</td>
+                `;
+                
+                // 添加警报样式
+                row.classList.add('alert', 'alert-danger');
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // 更新一分钟涨跌幅超过3%监测
+        function updateCryptoMinuteChange3pTable() {
+            const tbody = document.getElementById('crypto-minute-change-3p-table-body');
+            tbody.innerHTML = '';
+            
+            if (Object.keys(cryptoMinuteChange3p).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center">暂无数据</td></tr>';
+                return;
+            }
+            
+            // 按排名排序
+            const sortedMinuteChange = Object.entries(cryptoMinuteChange3p).sort((a, b) => a[1].rank - b[1].rank);
+            
+            sortedMinuteChange.forEach(([symbol, data]) => {
+                const row = document.createElement('tr');
+                const price = data.price.toFixed(2);
+                const changeClass = data.minute_change >= 0 ? 'price-up' : 'price-down';
+                const change = data.minute_change.toFixed(2);
+                
+                row.innerHTML = `
+                    <td>${data.rank}</td>
+                    <td>${symbol}</td>
+                    <td>${price}</td>
+                    <td class="${changeClass}">${change}%</td>
+                `;
+                
+                // 添加警报样式
+                row.classList.add('alert', 'alert-warning');
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // 更新加密货币涨幅榜
+        function updateCryptoTop10Table() {
+            const tbody = document.getElementById('crypto-top10-table-body');
+            tbody.innerHTML = '';
+            
+            if (Object.keys(cryptoTop10).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center">暂无数据</td></tr>';
+                return;
+            }
+            
+            // 按排名排序
+            const sortedTop10 = Object.entries(cryptoTop10).sort((a, b) => a[1].rank - b[1].rank);
+            
+            sortedTop10.forEach(([symbol, data]) => {
+                const row = document.createElement('tr');
+                const price = data.price.toFixed(2);
+                const changeClass = data.change >= 0 ? 'price-up' : 'price-down';
+                const change = data.change >= 0 ? `+${data.change.toFixed(2)}` : data.change.toFixed(2);
+                
+                row.innerHTML = `
+                    <td>${data.rank}</td>
+                    <td>${symbol}</td>
+                    <td>${price}</td>
+                    <td class="${changeClass}">${change}%</td>
+                `;
+                
+                // 前三名添加特殊样式
+                if (data.rank === 1) {
+                    row.classList.add('table-success');
+                } else if (data.rank === 2) {
+                    row.classList.add('table-info');
+                } else if (data.rank === 3) {
+                    row.classList.add('table-warning');
+                }
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // 更新加密货币表格
+        function updateCryptoTable() {
+            const tbody = document.getElementById('crypto-table-body');
+            tbody.innerHTML = '';
+            
+            if (Object.keys(cryptoData).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center">暂无数据</td></tr>';
+                return;
+            }
+            
+            Object.entries(cryptoData).forEach(([symbol, data]) => {
+                const row = document.createElement('tr');
+                const price = data.price.toFixed(2);
+                const changeClass = data.change >= 0 ? 'price-up' : 'price-down';
+                const change = data.change >= 0 ? `+${data.change.toFixed(2)}` : data.change.toFixed(2);
+                
+                row.innerHTML = `
+                    <td>${symbol}</td>
+                    <td>${price}</td>
+                    <td class="${changeClass}">${change}%</td>
+                    <td>${data.timestamp}</td>
+                `;
+                
+                // 检查是否超过阈值
+                if (Math.abs(data.change) >= config.alert_threshold) {
+                    row.classList.add('alert', 'alert-danger');
+                }
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // 更新股票表格
+        function updateStockTable() {
+            const tbody = document.getElementById('stock-table-body');
+            tbody.innerHTML = '';
+            
+            if (Object.keys(stockData).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center">暂无数据</td></tr>';
+                return;
+            }
+            
+            Object.entries(stockData).forEach(([symbol, data]) => {
+                const row = document.createElement('tr');
+                const price = data.close.toFixed(2);
+                const changeClass = data.pct_chg >= 0 ? 'price-up' : 'price-down';
+                const change = data.pct_chg.toFixed(2);
+                
+                row.innerHTML = `
+                    <td>${symbol}</td>
+                    <td>${data.name || '未知'}</td>
+                    <td>${price}</td>
+                    <td class="${changeClass}">${change}%</td>
+                    <td>${data.timestamp}</td>
+                `;
+                
+                // 检查是否超过阈值
+                if (Math.abs(data.pct_chg) >= config.alert_threshold) {
+                    row.classList.add('alert', 'alert-danger');
+                }
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // 更新图表
+        function updateChart() {
+            const ctx = document.getElementById('market-chart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            const cryptoLabels = Object.keys(cryptoData);
+            const cryptoPrices = Object.values(cryptoData).map(d => d.price);
+            
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: cryptoLabels,
+                    datasets: [{
+                        label: '加密货币价格 (USD)',
+                        data: cryptoPrices,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 初始化
+        fetchData();
+        
+        // 定时更新
+        setInterval(fetchData, 10000); // 10秒更新一次
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+    "crypto_symbols": [
+        "BTC",
+        "ETH",
+        "USDT",
+        "BNB",
+        "SOL",
+        "HYPE",
+        "RAVE"
+    ],
+    "stock_symbols": [
+        "600000.SH",
+        "600519.SH",
+        "000001.SZ",
+        "000858.SZ",
+        "000333.SZ"
+    ],
+    "crypto_api_url": "https://fapi.binance.com/fapi/v1/ticker/price",
+    "stock_api_url": "https://api.tushare.pro",
+    "tushare_token": "ab44a10c46aa7ec2bec102f491cb11fcb20a7ea30ac5ddf580ac46cb",
+    "refresh_interval": 10,
+    "alert_threshold": 5.0
+}
