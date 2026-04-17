@@ -168,18 +168,7 @@
             </div>
         </div>
         
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header bg-info text-white">
-                        <h2 class="h5 mb-0">市场趋势</h2>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="market-chart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         
         <div class="mt-4 text-center">
             <p class="text-muted">数据更新间隔: <span id="refresh-interval">10</span> 秒</p>
@@ -195,7 +184,6 @@
         let cryptoMinuteChange3p = {};
         let stockData = {};
         let config = {};
-        let chart = null;
         
         // 获取数据
         function fetchData() {
@@ -209,7 +197,6 @@
                     stockData = data.stock;
                     config = data.config;
                     updateUI();
-                    updateChart();
                     document.getElementById('refresh-interval').textContent = config.refresh_interval;
                     document.getElementById('last-update').textContent = new Date().toLocaleString();
                 })
@@ -394,40 +381,6 @@
                 }
                 
                 tbody.appendChild(row);
-            });
-        }
-        
-        // 更新图表
-        function updateChart() {
-            const ctx = document.getElementById('market-chart').getContext('2d');
-            
-            if (chart) {
-                chart.destroy();
-            }
-            
-            const cryptoLabels = Object.keys(cryptoData);
-            const cryptoPrices = Object.values(cryptoData).map(d => d.price);
-            
-            chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: cryptoLabels,
-                    datasets: [{
-                        label: '加密货币价格 (USD)',
-                        data: cryptoPrices,
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
             });
         }
         
