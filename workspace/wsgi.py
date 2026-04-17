@@ -188,14 +188,14 @@ class QuantAnalysisSystem:
                     'timestamp': data['timestamp']
                 }
             
-            # 筛选一分钟涨跌幅超过5%的加密货币（成交额>=1000万的USDT永续合约）
+            # 筛选一分钟涨跌幅超过5%的加密货币
             minute_change_crypto = {}
-            for crypto, data in filtered_crypto_data.items():
+            for crypto, data in all_crypto_data.items():
                 if 'minute_change' in data and abs(data['minute_change']) >= 5.0:
                     minute_change_crypto[crypto] = {
                         'price': data['price'],
                         'minute_change': data['minute_change'],
-                        'volume': data['volume'],
+                        'volume': data.get('volume', 0),
                         'timestamp': data['timestamp']
                     }
                     
@@ -227,14 +227,14 @@ class QuantAnalysisSystem:
                     'timestamp': data['timestamp']
                 }
             
-            # 筛选一分钟涨跌幅超过3%的加密货币（成交额>=1000万的USDT永续合约）
+            # 筛选一分钟涨跌幅超过3%的加密货币
             minute_change_crypto_3p = {}
-            for crypto, data in filtered_crypto_data.items():
+            for crypto, data in all_crypto_data.items():
                 if 'minute_change' in data and abs(data['minute_change']) >= 3.0:
                     minute_change_crypto_3p[crypto] = {
                         'price': data['price'],
                         'minute_change': data['minute_change'],
-                        'volume': data['volume'],
+                        'volume': data.get('volume', 0),
                         'timestamp': data['timestamp']
                     }
                     
