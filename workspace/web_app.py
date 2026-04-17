@@ -321,25 +321,6 @@ class QuantAnalysisSystem:
         if self.thread:
             self.thread.join()
 
-# 初始化系统
-system = QuantAnalysisSystem()
-system.start_monitoring()
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/api/data')
-def get_data():
-    return jsonify({
-        'crypto': system.crypto_data,
-        'crypto_top10': system.crypto_top10,
-        'crypto_minute_change': system.crypto_minute_change,
-        'crypto_minute_change_3p': system.crypto_minute_change_3p,
-        'stock': system.stock_data,
-        'config': system.config
-    })
-
 # 确保配置文件存在
 def ensure_config_exists():
     default_config = {
@@ -368,6 +349,25 @@ def ensure_templates_dir_exists():
 # 初始化应用所需的目录和文件
 ensure_config_exists()
 ensure_templates_dir_exists()
+
+# 初始化系统
+system = QuantAnalysisSystem()
+system.start_monitoring()
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/api/data')
+def get_data():
+    return jsonify({
+        'crypto': system.crypto_data,
+        'crypto_top10': system.crypto_top10,
+        'crypto_minute_change': system.crypto_minute_change,
+        'crypto_minute_change_3p': system.crypto_minute_change_3p,
+        'stock': system.stock_data,
+        'config': system.config
+    })
 
 if __name__ == '__main__':
     # 运行应用
