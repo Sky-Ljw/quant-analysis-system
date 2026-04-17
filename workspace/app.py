@@ -135,6 +135,10 @@ class QuantAnalysisSystem:
                 self.notified_crypto.clear()
                 self.notified_crypto_3p.clear()
             
+            # 存储24小时前的价格
+            twenty_four_hours_ago_prices = {}
+            
+            # 遍历所有币种，获取当前价格和24小时前的价格
             for item in ticker_data:
                 if not isinstance(item, dict):
                     continue
@@ -147,11 +151,9 @@ class QuantAnalysisSystem:
                     continue
                 crypto = symbol[:-4]  # 去掉USDT后缀
                 price = item.get('lastPrice')
-                change_24h = item.get('priceChangePercent')
-                if price and change_24h:
+                if price:
                     try:
                         current_price = float(price)
-                        change_24h_float = float(change_24h)
                         previous_price = self.previous_crypto_prices.get(crypto, current_price)
                         change = ((current_price - previous_price) / previous_price) * 100 if previous_price > 0 else 0
                         
@@ -161,6 +163,11 @@ class QuantAnalysisSystem:
                         
                         # 获取24h成交额
                         volume = volume_dict.get(symbol, 0)
+                        
+                        # 计算24小时涨跌幅
+                        # 使用Binance API提供的24小时涨跌幅数据
+                        # 这是Binance根据当前时间往前推24小时计算的涨跌幅
+                        change_24h_float = float(item.get('priceChangePercent', 0))
                         
                         all_crypto_data[crypto] = {
                             'price': current_price,
