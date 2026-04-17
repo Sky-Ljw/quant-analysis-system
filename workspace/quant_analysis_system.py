@@ -80,39 +80,39 @@ class QuantAnalysisSystem:
             return 0
         return ((current_price - previous_price) / previous_price) * 100
     
-    def monitor_market(self):
-        print("开始监测市场...")
-        previous_crypto_data = {}
-        previous_stock_data = {}
-        
-        while True:
-            # 获取最新数据
-            self.get_crypto_data()
-            self.get_stock_data()
-            
-            # 分析加密货币
-            print("\n加密货币市场:")
-            for crypto, data in self.crypto_data.items():
-                current_price = data['price']
-                previous_price = previous_crypto_data.get(crypto, {}).get('price', current_price)
-                change = self.calculate_change(current_price, previous_price)
-                print(f"{crypto}: ¥{current_price:.2f}, 涨跌幅: {change:.2f}%")
-                
-                if abs(change) >= self.config['alert_threshold']:
-                    print(f"⚠️  警报: {crypto} 涨跌幅超过 {self.config['alert_threshold']}%")
-                
-                previous_crypto_data[crypto] = data
-            
-            # 分析股票
-            print("\nA股市场:")
-            for stock, data in self.stock_data.items():
-                print(f"{stock}: ¥{data['close']:.2f}, 涨跌幅: {data['pct_chg']:.2f}%")
-                
-                if abs(data['pct_chg']) >= self.config['alert_threshold']:
-                    print(f"⚠️  警报: {stock} 涨跌幅超过 {self.config['alert_threshold']}%")
-            
-            # 等待下一次更新
-            time.sleep(self.config['refresh_interval'])
+    # def monitor_market(self):
+    #     print("开始监测市场...")
+    #     previous_crypto_data = {}
+    #     previous_stock_data = {}
+    #     
+    #     while True:
+    #         # 获取最新数据
+    #         self.get_crypto_data()
+    #         self.get_stock_data()
+    #         
+    #         # 分析加密货币
+    #         print("\n加密货币市场:")
+    #         for crypto, data in self.crypto_data.items():
+    #             current_price = data['price']
+    #             previous_price = previous_crypto_data.get(crypto, {}).get('price', current_price)
+    #             change = self.calculate_change(current_price, previous_price)
+    #             print(f"{crypto}: ¥{current_price:.2f}, 涨跌幅: {change:.2f}%")
+    #             
+    #             if abs(change) >= self.config['alert_threshold']:
+    #                 print(f"⚠️  警报: {crypto} 涨跌幅超过 {self.config['alert_threshold']}%")
+    #             
+    #             previous_crypto_data[crypto] = data
+    #         
+    #         # 分析股票
+    #         print("\nA股市场:")
+    #         for stock, data in self.stock_data.items():
+    #             print(f"{stock}: ¥{data['close']:.2f}, 涨跌幅: {data['pct_chg']:.2f}%")
+    #             
+    #             if abs(data['pct_chg']) >= self.config['alert_threshold']:
+    #                 print(f"⚠️  警报: {stock} 涨跌幅超过 {self.config['alert_threshold']}%")
+    #         
+    #         # 等待下一次更新
+    #         time.sleep(self.config['refresh_interval'])
     
     def visualize_data(self, data_type='crypto', days=7):
         # 这里可以添加可视化功能
@@ -150,4 +150,4 @@ if __name__ == "__main__":
         print(f"加密货币数据: {system.crypto_data}")
         # 开始监测
         print("开始持续监测...")
-        system.monitor_market()
+        # system.monitor_market()

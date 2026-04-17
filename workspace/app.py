@@ -319,22 +319,22 @@ class QuantAnalysisSystem:
             print(f"获取股票数据失败: {e}")
             return False
     
-    def start_monitoring(self):
-        self.running = True
-        def monitor():
-            while self.running:
-                self.get_crypto_data()
-                self.get_stock_data()
-                time.sleep(self.config['refresh_interval'])
-        
-        self.thread = threading.Thread(target=monitor)
-        self.thread.daemon = True
-        self.thread.start()
-    
-    def stop_monitoring(self):
-        self.running = False
-        if self.thread:
-            self.thread.join()
+    # def start_monitoring(self):
+    #     self.running = True
+    #     def monitor():
+    #         while self.running:
+    #             self.get_crypto_data()
+    #             self.get_stock_data()
+    #             time.sleep(self.config['refresh_interval'])
+    #     
+    #     self.thread = threading.Thread(target=monitor)
+    #     self.thread.daemon = True
+    #     self.thread.start()
+    # 
+    # def stop_monitoring(self):
+    #     self.running = False
+    #     if self.thread:
+    #         self.thread.join()
 
 # 确保配置文件存在
 def ensure_config_exists():
@@ -366,7 +366,7 @@ ensure_templates_dir_exists()
 
 # 初始化系统
 system = QuantAnalysisSystem()
-system.start_monitoring()
+# system.start_monitoring()
 
 @app.route('/')
 def index():
