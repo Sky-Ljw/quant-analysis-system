@@ -340,8 +340,8 @@ def get_data():
         'config': system.config
     })
 
-if __name__ == '__main__':
-    # 创建配置文件（如果不存在）
+# 确保配置文件存在
+def ensure_config_exists():
     default_config = {
         "crypto_symbols": ["BTC", "ETH", "USDT", "BNB", "SOL", "HYPE", "RAVE"],
         "stock_symbols": ["600000.SH", "600519.SH", "000001.SZ", "000858.SZ", "000333.SZ"],
@@ -358,11 +358,23 @@ if __name__ == '__main__':
     except FileNotFoundError:
         with open('config.json', 'w', encoding='utf-8') as f:
             json.dump(default_config, f, ensure_ascii=False, indent=4)
-    
-    # 创建templates目录
+
+# 确保templates目录存在
+def ensure_templates_dir_exists():
     import os
     if not os.path.exists('templates'):
         os.makedirs('templates')
-    
+
+# 初始化应用所需的目录和文件
+ensure_config_exists()
+ensure_templates_dir_exists()
+
+if __name__ == '__main__':
     # 运行应用
     app.run(debug=True, host='0.0.0.0', port=5000)
+
+# Vercel需要的应用导出
+# 确保应用在模块级别可用
+# Vercel会自动寻找名为app的Flask实例
+
+
