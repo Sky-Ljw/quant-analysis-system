@@ -125,7 +125,11 @@ class QuantAnalysisSystem:
             if time_diff >= 60:  # 一分钟更新一次
                 print("更新一分钟前的价格数据")
                 # 保存当前价格作为一分钟前的价格
+                # 使用之前收集的价格数据，而不是当前空的all_crypto_data
                 self.minute_ago_crypto_prices = {k: v['price'] for k, v in all_crypto_data.items() if 'price' in v}
+                # 如果all_crypto_data为空，使用previous_crypto_prices
+                if not self.minute_ago_crypto_prices:
+                    self.minute_ago_crypto_prices = self.previous_crypto_prices.copy()
                 self.last_minute_update_time = current_time
                 # 清空已通知记录，重新开始通知
                 self.notified_crypto.clear()
@@ -191,8 +195,9 @@ class QuantAnalysisSystem:
             
             # 筛选一分钟涨跌幅超过5%的加密货币（成交额>=1000万的USDT永续合约）
             minute_change_crypto = {}
-            for crypto, data in filtered_crypto_data.items():
-                if 'minute_change' in data and abs(data['minute_change']) >= 5.0:
+            for crypto, data in all_crypto_data.items():
+                # 检查成交额是否>=1000万USDT
+                if data.get('volume', 0) >= 10000000 and 'minute_change' in data and abs(data['minute_change']) >= 5.0:
                     minute_change_crypto[crypto] = {
                         'price': data['price'],
                         'minute_change': data['minute_change'],
@@ -230,8 +235,9 @@ class QuantAnalysisSystem:
             
             # 筛选一分钟涨跌幅超过3%的加密货币（成交额>=1000万的USDT永续合约）
             minute_change_crypto_3p = {}
-            for crypto, data in filtered_crypto_data.items():
-                if 'minute_change' in data and abs(data['minute_change']) >= 3.0:
+            for crypto, data in all_crypto_data.items():
+                # 检查成交额是否>=1000万USDT
+                if data.get('volume', 0) >= 10000000 and 'minute_change' in data and abs(data['minute_change']) >= 3.0:
                     minute_change_crypto_3p[crypto] = {
                         'price': data['price'],
                         'minute_change': data['minute_change'],
